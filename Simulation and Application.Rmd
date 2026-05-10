@@ -31,6 +31,10 @@ library(MixtureInf2.0)
 # Source a function that computes the MLE for a beta mixture
 source("functions/mle.beta.R")
 
+# Source a function that computes the PMLE for a beta mixture
+# with random initialization.
+source("functions/mle.beta.R")
+
 # Source a function that computes the 1-Wasserstein distance
 # between two beta mixtures
 source("functions/wasserstein1d.beta.mixture.R")
@@ -40,7 +44,7 @@ source("functions/wasserstein1d.beta.mixture.R")
 source("functions/js_divergence.R")
 ```
 
-## Simulation for comparing different estimators and the computational cost
+## Simulation for comparing different initilization methods, estimators and the computational cost
 
 For the data-generation process, we consider the following distributions:
 
@@ -51,7 +55,9 @@ $$
 ```{r, eval=FALSE}
 # Simulation code for the three-component beta mixture example 
 # in the paper (n = 1000). Depending on the sample size, 
-# this simulation may take 1–2 hours for n = 1000.
+# this simulation may take 1–2 hours for n = 1000. The setup
+# is the same as in the initialization method comparison; the 
+# only change is replacing the mle/sam/sar with pmle.beta.rand.
 
 set.seed(520)
 m0 <- 3
@@ -99,8 +105,8 @@ for (r in seq_len(nreps)) {
   x <- rmix.beta(n, pi_true, alpha_true, beta_true)
   ests$pmle[r, ] <- canonical_from_list(pmle.beta(
     x, m0, an = n^.5))
-  ests$mle[r, ]   <- canonical_from_list(mle.beta(x, m0))
-  ests$sam[r, ]   <- canonical_from_list(sam.beta.mix(
+  ests$mle[r, ] <- canonical_from_list(mle.beta(x, m0))
+  ests$sam[r, ] <- canonical_from_list(sam.beta.mix(
     x, m0, epsilon=1,an = n^.5))
   ests$sar[r, ]   <- canonical_from_list(sar.beta.mix(
     x, m0, epsilon=1,an = n^.5))
@@ -108,7 +114,7 @@ for (r in seq_len(nreps)) {
 
 for(k in names(ests))
   wass[,k] <- apply(ests[[k]],1,wasserstein1d.beta.mixture,
-                    m0=m0,F_par=theta_true)
+                    F_par=theta_true)
 
 wass_df <- as_tibble(wass) %>% mutate(rep=row_number()) %>%
   pivot_longer(-rep,names_to="estimator",values_to="wass")
