@@ -33,7 +33,7 @@ source("functions/mle.beta.R")
 
 # Source a function that computes the PMLE for a beta mixture
 # with random initialization.
-source("functions/mle.beta.R")
+source("functions/pmle.beta.rand.R")
 
 # Source a function that computes the 1-Wasserstein distance
 # between two beta mixtures
@@ -299,7 +299,7 @@ comp_cost <- ggplot(plot_tbl, aes(x = n, colour = expr, fill = expr)) +
   scale_x_log10(breaks = sample_sizes) +
   scale_colour_manual(values = pal) +
   scale_fill_manual(values = pal) +
-  labs(x = "Sample size", y = "Time", colour = "Estimators") +
+  labs(x = "Sample size", y = "Time (s)", colour = "Estimators") +
   guides(fill = "none") +
   theme_bw() +
   theme(legend.position = "right")
